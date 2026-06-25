@@ -1,0 +1,12 @@
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../infra/logger/logger.js';
+
+export function errorMiddleware(
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  logger.error(err);
+  res.status(500).json({ success: false, message: err.message || 'Internal server error' });
+}

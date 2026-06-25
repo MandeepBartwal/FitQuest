@@ -1,0 +1,406 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  status    String   @default("active")
+  is_verified Boolean  @default(false)
+  provider  String   @default("local")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile     UserProfile?
+  workoutLogs WorkoutLog[]
+  workoutPlans WorkoutPlan[]
+}
+
+model UserProfile {
+  id        Int     @id @default(autoincrement())
+  userId    Int     @unique
+  user      User    @relation(fields: [userId], references: [id])
+  name      String
+  age       Int?
+  weightKg  Float?
+  heightCm  Float?
+  goal      String?
+  gender    String?
+  dob       DateTime?
+  activity_level String?
+  goal_weight_kg Float?
+  country  String?
+  state    String?
+  city     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkoutLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  date        DateTime
+  durationMin Int
+  caloriesBurned Int?
+  setCompleted Int?
+  repsCompleted Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  notes       String?
+}
+
+model WorkoutPlan {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  exercises   Exercise[]
+}
+
+model Exercise {
+  id          Int      @id @default(autoincrement())
+  workoutPlanId Int
+  workoutPlan WorkoutPlan @relation(fields: [workoutPlanId], references: [id])
+  name        String
+  sets        Int
+  reps        Int
+  musclesGroup String?
+  equipment  String?
+  caloriesFactor Float?
+  restTimeSec Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserWorkoutPlan {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  workoutPlanId Int
+  startDate   DateTime
+  endDate     DateTime?
+  progress    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DietPlan {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  meals       Meal[]
+}
+
+model Meal {
+  id          Int      @id @default(autoincrement())
+  dietPlanId  Int
+  dietPlan    DietPlan @relation(fields: [dietPlanId], references: [id])
+  name        String
+  description String?
+  calories    Int?
+  protein     Float?
+  carbs       Float?
+  fats        Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FoodItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  servingSize String?
+  calories    Int?
+  protein     Float?
+  carbs       Float?
+  fats        Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FoodLogs {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  foodItemId  Int
+  consumedAt  DateTime
+  quantity    Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model WaterLogs{
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    consumedAt  DateTime
+    quantityMl  Float
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model WeightLogs {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  weightKg    Float
+  loggedAt  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BodyMeasurementLogs {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  waist Float
+  hip Float
+  chest Float
+  arms Float
+  thighs Float
+  loggedAt    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SleepLogs {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  sleepStart  DateTime
+  sleepEnd    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ActivityLogs {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  activityType String
+  steps       Int?
+  distanceKm  Float?
+  durationMin Int
+  caloriesBurned Int?
+  loggedAt    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model XpTransaction {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  source      String
+  xpAmount    Int
+  refrenceId    Int
+  reason      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserLevel{
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  userId      Int
+  level       Int
+  xpRequired  Int
+  icon      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model userBadge{
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  badgeName   String
+  badgeDescription String?
+  badgeIcon   String?
+  earnedAt    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Quest{
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  questType   String
+  isActive    Boolean  @default(true)
+  xpReward    Int
+  badgeReward String?
+  coinReward   Int?
+  startDate   DateTime
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserQuest{
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  questId     Int
+  progress    String?
+  isCompleted Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserSteak{
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    streakCount Int
+    lastStreakDate DateTime?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model FriendShip{
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    senderId    Int
+    ReciverId   Int
+    status      String   @default("pending")
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model ActivityFeed{
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    eventType   String
+    referenceId    Int?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model Challenges {
+    id          Int      @id @default(autoincrement())
+    title       String
+    type  String?
+    startDate   DateTime
+    endDate     DateTime?
+    xpReward    Int?
+    coinReward   Int?
+    isActive    Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model ChallengeParticipants {
+    id          Int      @id @default(autoincrement())
+    challengeId Int
+    userId      Int
+    progress    String?
+    score       Int?
+    rank        Int?
+    isCompleted Boolean  @default(false)
+    completedAt DateTime?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model UserLocation {
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    latitude    Float
+    longitude   Float
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model Territories {
+    id          Int      @id @default(autoincrement())
+    name        String
+    city        String?
+    state       String?
+    country     String?
+    latitude    Float?
+    longitude   Float?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model TerritoryControl {
+    id          Int      @id @default(autoincrement())
+    territoryId Int
+    teamId      Int
+    controlPoints String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model Team {
+    id          Int      @id @default(autoincrement())
+    name        String
+    logo        String?
+    description String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model TeamMembers {
+    id          Int      @id @default(autoincrement())
+    teamId      Int
+    userId      Int
+    role        String?
+    joinedAt    DateTime @default(now())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model Guild {
+    id          Int      @id @default(autoincrement())
+    name        String
+    leaderId     Int?
+    description String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model GuildMembers {
+    id          Int      @id @default(autoincrement())
+    guildId     Int
+    userId      Int
+    role        String?
+    joinedAt    DateTime @default(now())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model ShopItem {
+    id          Int      @id @default(autoincrement())
+    name        String
+    type        String
+    description String?
+    priceCoins       Int
+    currency    String
+    priceGems       Int?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model UserInventory {
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    itemId      Int
+    quantity    Int
+    acquiredAt  DateTime @default(now())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model Notification {
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    title       String
+    message     String
+    isRead      Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
