@@ -251,7 +251,7 @@ model UserQuest{
   updatedAt   DateTime @updatedAt
 }
 
-model UserSteak{
+model UserStreak{
     id          Int      @id @default(autoincrement())
     userId      Int
     streakCount Int
